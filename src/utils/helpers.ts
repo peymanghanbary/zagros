@@ -1,5 +1,6 @@
 import { dns, dnsImage } from "./constant";
 import * as SecureStore from 'expo-secure-store';
+import { ToastAndroid } from 'react-native';
   
   export const url = (path:any=null) => {
     if (is_null(path)) {
@@ -278,6 +279,30 @@ import * as SecureStore from 'expo-secure-store';
         return item;
       }
     });
+  };
+
+  export const toast = (message, duration = null) => {
+    switch (duration) {
+      case true:
+        duration = ToastAndroid.LONG;
+        break;
+      case "null":
+        duration = ToastAndroid.LONG;
+        break;
+      case "LONG":
+      case "long":
+        duration = ToastAndroid.LONG;
+        break;
+      case "SHORT":
+      case "short":
+        duration = ToastAndroid.SHORT;
+        break;
+      default:
+        duration = ToastAndroid.SHORT;
+        break;
+    }
+  
+    ToastAndroid.show(message, duration);
   };
   
   export const digitToArray = (digit:any) => {

@@ -1,11 +1,40 @@
-import React from 'react';
+import React, { useState } from 'react';
 import Screen from '../../components/Screen';
-import { StyleSheet, Text, View,TextInput, Image, TouchableOpacity, ScrollView } from 'react-native';
+import { StyleSheet, Text, View,TextInput, Image, TouchableOpacity, ScrollView,ActivityIndicator } from 'react-native';
 import Header from '../../components/Header';
 import { colors, dimensions } from '../../utils/style';
 import Animated, { FadeInDown } from 'react-native-reanimated';
+import { is_null, toast } from '../../utils/helpers';
+import { useDispatch } from 'react-redux';
+import { setUser } from '../../utils/redux/slices/userSlice';
 
 const Login=({navigation})=> {
+    
+    const dispatch=useDispatch()
+    const [state,setState]=useState({loading:false,username:"kminchelle",password:"0lelplR"})
+    const login=()=>{
+
+        if(is_null(state.username) || is_null(state.password)){
+            return toast("username and password are required!")
+        }
+
+        setState(s=>({...s,loading:true}))
+        setTimeout(()=>{setState(s=>({...s,loading:false}))},5000)
+        fetch('https://dummyjson.com/auth/login', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                username: state.username,
+                password: state.password,
+                // expiresInMins: 60, // optional
+            })
+        })
+        .then((res)=>{
+            console.log('res.json()',res.json());
+            setState(s=>({...s,loading:false}))
+            dispatch(setUser(res.json()))
+        })
+    }
     
     return (
         <Screen py={0}>
@@ -13,11 +42,12 @@ const Login=({navigation})=> {
             <ScrollView showsVerticalScrollIndicator={false}>
                 <Animated.View entering={FadeInDown.duration(800)} style={styles.container}>
                     <Image source={require('../../../assets/login.gif')} style={{width:250,height:250,marginTop:-150}}/>
-                    <TextInput placeholder='Enter Username' value='' style={styles.input}/>
-                    <TextInput placeholder='Enter Password' value='' style={styles.input}/>
+                    <TextInput placeholder='Enter Username' value={state.username} style={styles.input}/>
+                    <TextInput placeholder='Enter Password' value={state.password} style={styles.input}/>
 
-                    <TouchableOpacity style={styles.button}>
+                    <TouchableOpacity onPress={login} style={styles.button}>
                         <Text style={styles.buttonTitle}>Login</Text>
+                        {state.loading && (<ActivityIndicator style={{marginLeft:5,marginTop:3}} color={'#fff'}/>)}
                     </TouchableOpacity>
                 </Animated.View>
             </ScrollView>
@@ -50,6 +80,7 @@ const styles = StyleSheet.create({
         minHeight:50,
         borderRadius:15,
         marginTop:10,
+        flexDirection:'row'
     },
     buttonTitle:{
         color:'white',

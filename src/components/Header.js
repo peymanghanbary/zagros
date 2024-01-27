@@ -2,7 +2,7 @@ import React from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { Entypo } from '@expo/vector-icons';
 
-export default function Header({navigation,title=""}) {
+export default function Header({navigation,title="",rightElement=null}) {
 
   const _handleGoBack=React.useCallback(()=>{
     // return console.log('navigation',navigation);
@@ -18,6 +18,7 @@ export default function Header({navigation,title=""}) {
           </Pressable>
         )}
         <Text style={styles.title}>{title}</Text>
+        {rightElement}
     </View>
   );
 }
